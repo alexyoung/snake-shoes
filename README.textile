@@ -1,0 +1,4 @@
+h2. Snake in Shoes
+
+This is a simple Snake game written with Ruby and Shoes for a series of tutorials on "Quite Useful":http://quiteuseful.co.uk
+
