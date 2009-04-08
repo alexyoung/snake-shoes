@@ -222,7 +222,37 @@ class GameBoard
   end
 end
 
+class Sounds
+  def initialize(app)
+    @app = app
+    @sounds = {}
+  end
+
+  def add_sound(sound_name, file_name)
+    @sounds[sound_name] = @app.video("sounds/#{file_name}", :top => 0, :left => 0)
+  end
+
+  def play(sound_name)
+    stop_all
+    @sounds[sound_name].play
+  end
+
+  def playing?
+    @sounds.find { |sound_name, sound| sound.playing? }
+  end
+
+  def stop_all
+    @sounds.each do |sound_name, sound|
+      sound.stop if sound.playing?
+    end
+  end
+end
+
 Shoes.app do
+  @sounds = Sounds.new self
+  @sounds.add_sound :collect, 'collect.mp3'
+  @sounds.add_sound :death, 'death.mp3'
+
   def setup_game(app)
     app.background '#000'
 
@@ -267,10 +297,12 @@ Shoes.app do
     if @board.food_eaten?
       @board.eat_food
       @score.text = "Score: #{@board.score}"
+      @sounds.play :collect
     elsif @board.crashed_into_brick? or @board.crashed_into_self?
       @snake.dead = true
       @anim.stop
-      banner "Game Over", :top => 170, :left => 120, :stroke => '#fff', :fill => '#000'
+      @sounds.play :death
+      banner "Game Over", :top => 190, :left => 180, :stroke => '#fff', :fill => '#000', :size => 32
       para "Press 'r' to play again", :top => 250, :left => 210, :stroke => '#fff', :fill => '#000'
     end
   end
